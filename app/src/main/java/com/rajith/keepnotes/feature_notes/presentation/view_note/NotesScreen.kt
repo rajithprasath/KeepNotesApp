@@ -13,9 +13,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.rajith.keepnotes.feature_notes.presentation.util.Screen
 import com.rajith.keepnotes.feature_notes.presentation.view_note.NoteViewModel
 import com.rajith.keepnotes.feature_notes.presentation.view_note.NotesEvent
 import kotlinx.coroutines.launch
@@ -34,14 +36,22 @@ fun NotesScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-
+                    navController.navigate(Screen.AddEditNoteScreen.route)
                 },
                 backgroundColor = MaterialTheme.colors.primary
             ) {
                 Icon(imageVector = Icons.Default.Add, contentDescription = "Add note")
             }
         },
-        scaffoldState = scaffoldState
+        scaffoldState = scaffoldState,
+        snackbarHost = {
+            SnackbarHost(it) { data ->
+                Snackbar(
+                    actionColor = Color.White,
+                    snackbarData = data
+                )
+            }
+        }
     ) {
         Column(
             modifier = Modifier
@@ -98,7 +108,7 @@ fun NotesScreen(
                             scope.launch {
                                val result = scaffoldState.snackbarHostState.showSnackbar(
                                     message = "Note Deleted",
-                                    actionLabel = "UNDO"
+                                    actionLabel = "UNDO",
                                 )
                                 if(result == SnackbarResult.ActionPerformed){
                                     viewModel.onEvent(NotesEvent.RestoreNote)
